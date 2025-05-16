@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Matematika Seru</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #2980b9, #6dd5fa);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    .game-container {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #soal {
+      font-size: 28px;
+      margin: 20px 0;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      width: 80%;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2ecc71;
+      color: white;
+      cursor: pointer;
+    }
+
+    .info {
+      margin: 15px 0;
+      font-size: 16px;
+    }
+
+    #feedback {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    #startBtn {
+      background-color: #e67e22;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Game Matematika Seru 🔢</h1>
+    <div class="info">⏱️ Waktu: <span id="timer">60</span> detik</div>
+    <div class="info">🏆 Skor: <span id="score">0</span></div>
+    <div id="soal">Tekan Mulai untuk bermain!</div>
+    <input type="number" id="jawaban" placeholder="Masukkan jawaban..." disabled />
+    <br>
+    <button onclick="cekJawaban()" id="jawabBtn" disabled>Jawab</button>
+    <button onclick="mulaiGame()" id="startBtn">Mulai Game</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    let angka1, angka2, operator, hasil;
+    let score = 0;
+    let waktu = 60;
+    let timerInterval;
+
+    function acakSoal() {
+      const ops = ['+', '-', '*'];
+      angka1 = Math.floor(Math.random() * 20) + 1;
+      angka2 = Math.floor(Math.random() * 20) + 1;
+      operator = ops[Math.floor(Math.random() * ops.length)];
+
+      if (operator === '-' && angka2 > angka1) {
+        [angka1, angka2] = [angka2, angka1]; // agar hasil tidak negatif
+      }
+
+      hasil = eval(`${angka1} ${operator} ${angka2}`);
+      document.getElementById("soal").innerText = `${angka1} ${operator} ${angka2} = ?`;
+      document.getElementById("jawaban").value = "";
+      document.getElementById("jawaban").focus();
+    }
+
+    function cekJawaban() {
+      const input = parseInt(document.getElementById("jawaban").value);
+      if (input === hasil) {
+        score++;
+        document.getElementById("score").innerText = score;
+        document.getElementById("feedback").innerText = "✅ Benar!";
+      } else {
+        document.getElementById("feedback").innerText = "❌ Salah!";
+      }
+      acakSoal();
+    }
+
+    function mulaiGame() {
+      score = 0;
+      waktu = 60;
+      document.getElementById("score").innerText = score;
+      document.getElementById("timer").innerText = waktu;
+      document.getElementById("jawaban").disabled = false;
+      document.getElementById("jawabBtn").disabled = false;
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("feedback").innerText = "";
+      acakSoal();
+
+      timerInterval = setInterval(() => {
+        waktu--;
+        document.getElementById("timer").innerText = waktu;
+        if (waktu <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById("soal").innerText = "⏰ Waktu habis!";
+          document.getElementById("jawaban").disabled = true;
+          document.getElementById("jawabBtn").disabled = true;
+          document.getElementById("startBtn").disabled = false;
+          document.getElementById("feedback").innerText = `🎉 Skor akhir: ${score}`;
+        }
+      }, 1000);
+    }
+
+    document.getElementById("jawaban").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        cekJawaban();
+      }
+    });
+  </script>
+</body>
+</html>
